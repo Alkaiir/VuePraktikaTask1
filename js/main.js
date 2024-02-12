@@ -18,26 +18,14 @@ let app = new Vue({
                 variantImage: "./assets/vmSocks-blue-onWhite.jpg",
             }
         ],
-
         cart: 0
     },
     methods: {
-
         addToCart() {
             this.cart += 1
         },
-
-        deleteFromCart() {
-          if (this.cart > 0) {
-              this.cart -= 1
-          } else {
-              alert("Корзина пуста")
-          }
-        },
-
         updateProduct(variantImage) {
             this.image = variantImage
         }
-
     }
 })
