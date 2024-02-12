@@ -23,15 +23,23 @@
             <h1>{{ product }}</h1>
             <p v-if="inStock">In stock</p>
             <p v-else>Out of Stock</p>
+
             <ul>
                 <li v-for="detail in details">{{ detail }}</li>
             </ul>
-            <ul>
-                <li v-for="size in sizes">{{ size }}</li>
-            </ul>
+
             <div v-for="variant in variants" :key="variant.variantId">
-                <p>{{ variant.variantColor }}</p>
+                <p @mouseover="updateProduct(variant.variantImage)">
+                    {{ variant.variantColor }}
+                </p>
             </div>
+
+        </div>
+
+        <div class="cart">
+            <button @click="addToCart">Add to cart</button>
+            <button @click="deleteFromCart">Delete from cart</button>
+            <p>Cart({{ cart }})</p>
         </div>
 
     </div>
