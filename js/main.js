@@ -7,38 +7,41 @@ Vue.component('product', {
     },
     template: `
    <div class="product">
-        <div class="product-image">
-            <img :src="image" :alt="altText"/>
-        </div>
+    <div class="product-image">
+           <img :src="image" :alt="altText"/>
+       </div>
 
-        <div class="product-info">
-            <h1>{{ title }}</h1>
-            <p v-if="inStock">In stock</p>
-            <p v-else>Out of Stock</p>
-            <product-details :details="details"></product-details>
-            
-            <p>Shipping: {{ shipping }}</p>
+       <div class="product-info">
+           <h1>{{ title }}</h1>
+           <p v-if="inStock">In stock</p>
+           <p v-else>Out of Stock</p>
+           <ul>
+               <li v-for="detail in details">{{ detail }}</li>
+           </ul>
+          <p>Shipping: {{ shipping }}</p>
+           <div
+                   class="color-box"
+                   v-for="(variant, index) in variants"
+                   :key="variant.variantId"
+                   :style="{ backgroundColor:variant.variantColor }"
+                   @mouseover="updateProduct(index)"
+           ></div>
 
-            <div
-                    class="color-box"
-                    v-for="(variant, index) in variants"
-                    :key="variant.variantId"
-                    :style="{ backgroundColor:variant.variantColor }"
-                    @mouseover="updateProduct(index)"
-            ></div>
-
-            <div class="cart">
-                <p>Cart({{ cart }})</p>
-            </div>
-
-            <button
-                    v-on:click="addToCart"
-                    :disabled="!inStock"
-                    :class="{ disabledButton: !inStock }"
-            >
-                Add to cart
-            </button>
-        </div>
+           <button
+                   v-on:click="addToCart"
+                   :disabled="!inStock"
+                   :class="{ disabledButton: !inStock }"
+           >
+               Add to cart
+           </button>
+           
+           <button
+                   v-on:click="removeFromCart"
+           >
+               Remove from cart
+           </button>
+       
+       </div>
    </div>
  `,
     data() {
@@ -62,12 +65,14 @@ Vue.component('product', {
                     variantQuantity: 0
                 }
             ],
-            cart: 0
         }
     },
     methods: {
         addToCart() {
-            this.cart += 1
+            this.$emit('add-to-cart', this.variants[this.selectedVariant].variantId, 'add');
+        },
+        removeFromCart() {
+            this.$emit('remove-from-cart', this.variants[this.selectedVariant].variantId, 'remove');
         },
         updateProduct(index) {
             this.selectedVariant = index;
@@ -81,7 +86,7 @@ Vue.component('product', {
         image() {
             return this.variants[this.selectedVariant].variantImage;
         },
-        inStock(){
+        inStock() {
             return this.variants[this.selectedVariant].variantQuantity
         },
         shipping() {
@@ -91,7 +96,6 @@ Vue.component('product', {
                 return 2.99
             }
         }
-
     }
 })
 
@@ -123,9 +127,30 @@ Vue.component('product-details', {
 let app = new Vue({
     el: '#app',
     data: {
-        premium: true
+        premium: true,
+        cart: []
+    },
+    methods: {
+        updateCart(id,type) {
+            let removeID;
+            if (type === 'add') {
+                this.cart.push(id);
+            } else if (type === 'remove') {
+                for (let i = 0; i < this.cart.length; ++i ) {
+                    if (this.cart[i] === id) {
+                        removeID = i;
+                        break;
+                    };
+                }
+                if (removeID !== undefined) {
+                    this.cart.splice(removeID, 1);
+                }
+
+            }
+        }
     }
 })
+
 
 // Vue.component('', {
 //     props: {
