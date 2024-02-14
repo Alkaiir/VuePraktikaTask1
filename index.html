@@ -13,10 +13,16 @@
 <body>
 
 <div id="app">
-    <div class="cart">
-        <p>Cart({{ cart.length}})</p>
+    <div class="nav-bar">
+        <div class="cart">
+            <p>Cart({{ cart.length}})</p>
+        </div>
+        <select>
+            <option value="az">А->Я</option>
+            <option value="za">Я->А</option>
+        </select>
     </div>
-    <product :premium="premium" @add-to-cart="updateCart" @remove-from-cart="updateCart" ></product>
+    <catalog :premium="premium" :cart="cart"></catalog>
 </div>
 
 </body>

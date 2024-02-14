@@ -3,7 +3,12 @@ Vue.component('product', {
         premium: {
             type: Boolean,
             required: true
+        },
+        productData: {
+            type: Object,
+            required: true
         }
+
     },
     template: `
    <div class="product">
@@ -46,36 +51,23 @@ Vue.component('product', {
                Remove from cart
            </button>
            
-           <product-tabs :reviews="reviews" :details="details" :premium="premium"></product-tabs>
+           <product-tabs :productData="productData" :reviews="reviews" :details="details" :premium="premium"></product-tabs>
            
        </div>
    </div>
  `,
     data() {
         return {
-            product: "Socks",
-            description: "A pair of warm, fuzzy socks",
-            brand: 'Vue Mastery',
+            product: this.productData.product,
+            description: this.productData.description,
+            brand: this.productData.brand,
             selectedVariant: 0,
-            altText: "A pair of socks",
-            details: ['80% cotton', '20% polyester', 'Gender-neutral'],
-            sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
-            link: "https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=socks",
-            variants: [
-                {
-                    variantId: 2234,
-                    variantColor: 'green',
-                    variantImage: "./assets/vmSocks-green-onWhite.jpg",
-                    variantQuantity: 10
-                },
-                {
-                    variantId: 2235,
-                    variantColor: 'blue',
-                    variantImage: "./assets/vmSocks-blue-onWhite.jpg",
-                    variantQuantity: 0
-                }
-            ],
-            reviews: []
+            altText: this.productData.altText,
+            details: this.productData.details,
+            sizes: this.productData.sizes,
+            link: this.productData.link,
+            variants: this.productData.variants,
+            reviews: this.productData.reviews
         }
     },
     methods: {
@@ -87,8 +79,8 @@ Vue.component('product', {
         },
         updateProduct(index) {
             this.selectedVariant = index;
-            console.log(index);
-        }
+        },
+
     },
     computed: {
         title() {
@@ -117,8 +109,132 @@ Vue.component('product-details', {
     `,
 })
 
+Vue.component('catalog', {
+    props: {
+        premium: {
+            type: Boolean,
+            required: true
+        },
+        cart: {
+            type: Array,
+            required: true
+        }
+    },
+    data() {
+        return {
+            products: [{
+                product: "Socks",
+                description: "A pair of warm, fuzzy socks",
+                brand: 'Vue Mastery',
+                selectedVariant: 0,
+                altText: "A pair of socks",
+                details: ['80% cotton', '20% polyester', 'Gender-neutral'],
+                sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
+                link: "https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=socks",
+                variants: [
+                    {
+                        variantId: 2234,
+                        variantColor: 'green',
+                        variantImage: "./assets/vmSocks-green-onWhite.jpg",
+                        variantQuantity: 10
+                    },
+                    {
+                        variantId: 2235,
+                        variantColor: 'blue',
+                        variantImage: "./assets/vmSocks-blue-onWhite.jpg",
+                        variantQuantity: 0
+                    }
+                ],
+                reviews: []
+            },
+                {
+                    product: "Base Socks",
+                    description: "A pair of basic socks",
+                    brand: 'React',
+                    selectedVariant: 0,
+                    altText: "A pair of socks",
+                    details: ['90% cotton', '10% polyester', 'Gender-neutral'],
+                    sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
+                    link: "https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=socks",
+                    variants: [
+                        {
+                            variantId: 2236,
+                            variantColor: 'black',
+                            variantImage: "./assets/blackSocks.jpeg",
+                            variantQuantity: 10
+                        },
+                        {
+                            variantId: 2237,
+                            variantColor: 'white',
+                            variantImage: "./assets/whiteSocks.jpeg",
+                            variantQuantity: 5
+                        }
+                    ],
+                    reviews: []
+                },
+                {
+                    product: "Unknown Socks",
+                    description: "A pair of leather socks",
+                    brand: 'NoBrand',
+                    selectedVariant: 0,
+                    altText: "A pair of socks",
+                    details: ['80% cotton', '20% polyester', 'Gender-neutral'],
+                    sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
+                    link: "https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=socks",
+                    variants: [
+                        {
+                            variantId: 2238,
+                            variantColor: 'black',
+                            variantImage: "./assets/unknownSocks1.png",
+                            variantQuantity: 0
+                        },
+                        {
+                            variantId: 2239,
+                            variantColor: 'gray',
+                            variantImage: "./assets/unknownSocks2.jpeg",
+                            variantQuantity: 15
+                        }
+                    ],
+                    reviews: []
+                }]
+        }
+    },
+    template: `
+    <div>
+    <product 
+        :premium="premium" 
+        :productData="product"
+        :key="product.product"
+        v-for="product in products"
+        @add-to-cart="updateCart" 
+        @remove-from-cart="updateCart" 
+    >
+    
+    </product>
+    </div>
+    `,
+    methods: {
+        updateCart(id,type) {
+            let removeID;
+            if (type === 'add') {
+                this.cart.push(id);
+            } else if (type === 'remove') {
+                for (let i = 0; i < this.cart.length; ++i ) {
+                    if (this.cart[i] === id) {
+                        removeID = i;
+                        break;
+                    }
+                }
+                if (removeID !== undefined) {
+                    this.cart.splice(removeID, 1);
+                }
+
+            }
+        }
+    }
+})
+
 Vue.component('product-review', {
-    // language=HTML
     template: `
    <form class="review-form" @submit.prevent="onSubmit">
    <p v-if="errors.length">
@@ -225,9 +341,9 @@ Vue.component('product-tabs', {
             type: Array,
             required: true
         },
-        reviews: {
-            type: Array,
-            required: false
+        productData: {
+          type: Object,
+          required: true
         },
         premium: {
             type: Boolean,
@@ -268,12 +384,13 @@ Vue.component('product-tabs', {
     data() {
         return {
             tabs: ['Reviews', 'Make a Review', 'Shipping', 'Details'],
-            selectedTab: 'Reviews'
+            selectedTab: 'Reviews',
+            reviews: this.productData.reviews
         }
     },
     mounted() {
         eventBus.$on('review-submitted', productReview => {
-            this.reviews.push(productReview)
+            this.productData.reviews.push(productReview)
         })
     },
 })
@@ -287,23 +404,7 @@ let app = new Vue({
         cart: []
     },
     methods: {
-        updateCart(id,type) {
-            let removeID;
-            if (type === 'add') {
-                this.cart.push(id);
-            } else if (type === 'remove') {
-                for (let i = 0; i < this.cart.length; ++i ) {
-                    if (this.cart[i] === id) {
-                        removeID = i;
-                        break;
-                    }
-                }
-                if (removeID !== undefined) {
-                    this.cart.splice(removeID, 1);
-                }
 
-            }
-        }
     }
 })
 
